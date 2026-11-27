@@ -11,6 +11,7 @@ import com.example.UserAuthService.service.JwtService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -25,7 +26,7 @@ public class AuthController {
     private final JwtService jwtService;
 
     @PostMapping("/signup")
-    public ResponseEntity<UserDto> signupByEmail(@RequestBody AuthRequest authRequest) {
+    public ResponseEntity<UserDto> signupByEmail( @Valid @RequestBody AuthRequest authRequest) {
         User user = authService.signup(authRequest.getEmail(), authRequest.getPassword());
         if (user == null) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
@@ -38,7 +39,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody AuthRequest authRequest) {
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody AuthRequest authRequest) {
         String token = authService.login(authRequest.getEmail(), authRequest.getPassword());
         if (token == null) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -48,7 +49,7 @@ public class AuthController {
         return new ResponseEntity<>(loginResponse, HttpStatus.OK);
     }
 
-    @GetMapping("/validate")
+    @GetMapping("/validateToken")
     public ResponseEntity<UserDto> validateToken(
             @RequestHeader("Authorization") String header)
     {
